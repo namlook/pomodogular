@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html ng-app="pomodogular" ng-controller="PomodoroCtrl">
+<head>
+    <meta charset="UTF-8">
+    <title countdown="remainingSeconds">Pomodogular</title>
+
+
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/foundation.css">
+
+    <link rel="stylesheet" href="css/pmdr.css" type="text/css" />
+</head>
+<body>
+    <div class="row">
+      <div class="small-6 large-centered columns">
+
+            <h1 countdown="remainingSeconds" id="countdown">00:00</h1>
+
+            <div id="ctrlView">
+                <button ng-click="start()" ng-disabled="isStarted">start</button>
+                <button ng-click="shortBreak()" ng-disabled="isStarted">break</button>
+                <button ng-click="longBreak()" ng-disabled="isStarted">long break</button>
+                <button ng-click="stop()"  ng-disabled="!isStarted">stop</button>
+            </div>
+
+            <form>
+                <label for="dynamicTitleCb">Show dynamic title</label>
+                <input type="checkbox" id="dynamicTitleCb" checked="checked" disabled="disabled" class="inline" />
+            </form>
+
+            <h1 class="pomodoros"><span ng-bind="nbPomodoros">0</span> pomodoros</h1>
+      </div>
+    </div>
+
+    <audio id="audioAlert">
+        <source src="audio/bong.ogg" type="audio/ogg" />
+        <source src="audio/bong.mp3" type="audio/mpeg" />
+        <source src="audio/bong.wav" type="audio/wave" />
+    </audio>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular.min.js"></script>
+    <script src="js/vendors/underscore.string.min.js"></script>
+
+    <script>
+    var pomodogular = angular.module('pomodogular', []);
+
+    pomodogular.directive('countdown', function() {
+        return {
+            restrict: 'A',
+            link: function (scope, elem, attrs) {
+                scope.$watch(attrs.countdown, function(seconds) {
+                    var minutes = parseInt(seconds/60, 10);
+                    minutes = _.str.pad(minutes, 2, '0');
+                    seconds = _.str.pad(seconds % 60, 2, '0');
+                    elem.text(minutes+":"+seconds);
+                });
+            }
+        }
+    });
+
+    pomodogular.controller('PomodoroCtrl', function($scope) {
+
+        var Timer = function(){
+            var _interval;
+
+            var stop = function() {
+                clearInterval(_interval);
+                $scope.duration = null;
+                $scope.remainingSeconds = 0;
+                $scope.isStarted = false;
+                localStorage.removeItem('timer');
+            }         
+
+            var start = function(duration) {
+                $scope.duration = duration;
+                $scope.remainingSeconds = duration;
+                $scope.isStarted = true;
+                localStorage.setItem('timer', angular.toJson({startedAt: Date.now(), duration: $scope.duration}));   
+                clearInterval(_interval);
+                _interval = setInterval(function(){
+                    $scope.$apply(function () {
+                        if ($scope.remainingSeconds > 0) {
+                            $scope.remainingSeconds = $scope.remainingSeconds - 1;
+                        } else {
+                            document.querySelector('#audioAlert').play();
+                            $scope.nbPomodoros++;
+                            localStorage.setItem('pomodoros', $scope.nbPomodoros);
+                            stop();
+                        }
+                    });
+                }, 1000); 
+            }
+
+            return {
+                start: start,
+                stop: stop
+            }
+        }
+
+        $scope.remainingSeconds = 0;
+        $scope.nbPomodoros = localStorage.getItem('pomodoros') || 0;
+        $scope.isStarted = false;
+        var timer = Timer();
+
+        // fetch the localStorage to see if there is no pomodoro already running
+        var storedTimer = angular.fromJson(localStorage.getItem('timer'));
+        if (storedTimer) {
+            var delta = (Date.now() - storedTimer.startedAt) / 1000;
+            if (delta > 0) {
+                var newDuration = parseInt(storedTimer.duration - delta, 10);
+                timer.start(newDuration);
+            }
+        }
+
+        $scope.start = function(){
+            timer.start(10);
+        }
+        
+        $scope.shortBreak = function(){
+            timer.start(2);
+        }
+
+        $scope.longBreak = function(){
+            timer.start(3);
+        }
+
+        $scope.stop = function(){
+            timer.stop();
+        }
+
+    });
+    </script>
+</body>
+</html>
