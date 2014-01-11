@@ -7,9 +7,14 @@ pomodogular.factory('pomodoros', function(){
         this.total = parseInt(localStorage.getItem('pomodoros'), 10) || 0;
     };
 
-    Pomodoros.prototype.inc = function(){
+    Pomodoros.prototype.add = function(){
         this.total += 1;
         localStorage.setItem('pomodoros', this.total);
+    };
+
+    Pomodoros.prototype.reset = function(){
+        this.total = 0;
+        localStorage.removeItem('pomodoros');
     };
 
     return new Pomodoros();
@@ -59,5 +64,4 @@ pomodogular.factory('timer', function($interval){
     };
 
     return new Timer();
-
 });

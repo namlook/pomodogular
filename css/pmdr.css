@@ -16,7 +16,20 @@ label {
     display: inline;
 }
 
-.pomodoros {
+.pomodoros{
     text-align: center;
+}
+
+.pomodoros .reset {
+    color: #999;
+}
+
+.pomodoros .title {
     color: red;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+	display: none !important;
 }

@@ -2,6 +2,7 @@
 pomodogular.controller('PomodoroCtrl', function($scope, bell, timer, pomodoros) {
 
     $scope.dynamicTitle = true;
+    $scope.showResetButton = false;
     $scope.remainingSeconds = 0;
     $scope.pomodoros = pomodoros;
     $scope.timer = timer;
@@ -22,14 +23,14 @@ pomodogular.controller('PomodoroCtrl', function($scope, bell, timer, pomodoros) 
         if (remainingSeconds === 0) {
             bell.play();
             if (timer.type === 'pomodoro') {
-                pomodoros.inc();
+                pomodoros.add();
             }
         }
     });
 
 
     $scope.start = function(){
-        timer.start({duration: 2, type: 'pomodoro'});
+        timer.start({duration: 25*60, type: 'pomodoro'});
     };
     
     $scope.shortBreak = function(){
@@ -42,6 +43,13 @@ pomodogular.controller('PomodoroCtrl', function($scope, bell, timer, pomodoros) 
 
     $scope.stop = function(){
         timer.stop();
+    };
+
+    $scope.resetPomodoros = function() {
+        var reply = confirm('Are you sure you want to reset your pomodoros ?');
+        if (reply) {
+            pomodoros.reset();
+        }
     };
 
 });

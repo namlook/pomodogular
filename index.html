@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="css/foundation.css">
 
     <link rel="stylesheet" href="css/pmdr.css" type="text/css" />
+
+    <script src="js/vendors/modernizr.js"></script>
 </head>
 <body>
     <div class="row">
@@ -27,8 +29,11 @@
                 <input type="checkbox" id="dynamicTitleCb" ng-click="incPomodoros()" ng-model="dynamicTitle" checked="checked" class="inline" />
             </form>
 
-            <h1 class="pomodoros"><span ng-bind="pomodoros.total">?</span> pomodoros</h1>
-      </div>
+            <div class="pomodoros ng-cloak">
+                <h1 class="title">{{pomodoros.total}} pomodoros</h1>
+                <a href="#" class="reset" ng-click="resetPomodoros()">reset</a>
+            </div>
+
     </div>
 
     <audio id="audioAlert">
@@ -38,13 +43,21 @@
     </audio>
 
 
+    <script src="js/vendors/jquery.js"></script>
+    <script src="js/vendors/fastclick.js"></script>
+    <script src="js/vendors/foundation.min.js"></script>
+
+    <script>
+        $(document).foundation();
+    </script>
+
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular.min.js"></script>
     <script src="js/vendors/underscore.string.min.js"></script>
-
 
     <script src="js/app.js"></script>
     <script src="js/services.js"></script>
     <script src="js/controllers.js"></script>
+    <script src="js/directives.js"></script>
 
 </body>
 </html>
